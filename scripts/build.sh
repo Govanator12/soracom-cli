@@ -56,6 +56,9 @@ fi
 : 'Install dependencies' && {
     echo 'Installing build dependencies ...'
     run_command_on_docker_container '' 'go get -u golang.org/x/tools/cmd/goimports'
+    run_command_on_docker_container '' 'go get -u github.com/laher/goxc'
+
+    echo 'Installing commands used with "go generate" ...'
     run_command_on_docker_container '' 'go get -u github.com/jessevdk/go-assets-builder'
 }
 
