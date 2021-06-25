@@ -4,68 +4,65 @@
 
 # soracom-cli
 
-A command line tool `soracom` to invoke SORACOM API.
+A command line tool `soracom` to invoke the SORACOM API.
 
-# Feature
+# Features
 
 The `soracom` command:
 
-- supports new APIs on-time. The binary file of the soracom command is automatically generated from the API definition file.
+- Automatically supports new APIs functions as they are added to the platform. The binary file of the soracom command is automatically generated from the API definition file.
 
-- just works by copying the cross-compiled binary file into the target environment. There is no need to build an environment or solve dependencies.
+- Just works by copying the cross-compiled binary file into the target environment. There is no need to build an environment or solve dependencies.
 
-- constructs a request based on the specified argument and calls the SORACOM API. Response (JSON) from the API is output directly to standard output.
-  - This makes it easier to process the output of the soracom command and pass it to another command
+- Constructs a request based on the specified argument and forwards it to the SORACOM API. The JSON response from the API is then converted and output directly as standard output, making it easier to process the output of the intial command and pass it to another command
 
-- supports bash completion. Please write the following line in .bashrc etc
+- Supports bash completion. To enable thsi feature, please add the following line in .bashrc etc
   ```
   eval "$(soracom completion bash)"
   ```
 
-  if you are a macOS user, you probably need to either:
-  1. use `bash` version >= 4.0, or
-  2. use `brew install bash-completion` instead of using Xcode version of bash-completion and then add the following to either your `.bash_profile` or `.profile`:
+   Mac OS users will need to either:
+    1. Use `bash` version >= 4.0, or
+    2. Use `brew install bash-completion` instead of using the Xcode version of bash-completion, and then add the following to either your `.bash_profile` or `.profile`:
 
   ```
   if [ -f $(brew --prefix)/etc/bash_completion ]; then
     . $(brew --prefix)/etc/bash_completion
   fi
   ```
-  otherwise you might be getting the error like the following:
+  If this change is not made you may recieve the following error:
   ```
   -bash: __ltrim_colon_completions: command not found
   ```
 
-- supports zsh completion. The generated completion script by running the following command should be put somewhere in your $fpath named `_soracom`
-  ```
-  soracom completion zsh
-  ```
+- Supports zsh completion. To enable zsh completion, first generate the completion script by running `soracom completion zsh`, then rename the generated script as `_soracom` and place the file somewhere in your $fpath.
 
-# How to install
+# Installation
 
-## Using Mac (macOS), installing by homebrew
+## For Mac (macOS):
 
+-  Intallation is performed using homebrew with the following commands:
 ```
 $ brew tap soracom/soracom-cli
 $ brew install soracom-cli
 $ brew install bash-completion
 ```
 
-## In other cases
+## For Other Operating Systems:
 Download a package file that match the environment of the target from [Releases page](https://github.com/soracom/soracom-cli/releases), unpack it, and place the executable file in the directory where included in PATH.
 
 
-# How to use
+# Usage
 
-## Basic usage
+## Initial Configuration
 
-First of all, create a profile by running the following command:
+Before using the Soracom CLI tool to make API calls, you must configure it to associate those calls with your Soracom Operator account. To do so, create a profile by running the following command:
 
 ```
 soracom configure
 ```
 
-You will be asked which coverage type to use.
+You will be asked to select whether your account was created as a Gloabal or Japanese coverage account.
 
 ```
 Please select which coverage type to use.
@@ -76,9 +73,9 @@ Please select which coverage type to use.
 select (1-2) >
 ```
 
-Please select the coverage type which you mainly use. In most cases, please select Global. If you live in Japan and use SIM cards in Japan, please select Japan.
+Please select the coverage type which you primarily use. For most users this will be Global, however if you live in Japan and use SIM cards in Japan, please select Japan.
 
-Next you will be asked about the authentication method.
+Next you will be asked to select an authentication method.
 
 ```
 Please select which authentication method to use.
@@ -90,16 +87,13 @@ Please select which authentication method to use.
 select (1-3) >
 ```
 
-Please select 1 if AuthKey (authentication key) has been issued to SAM user or root account.
+Please select 1 if an AuthKey (authentication key) has been issued to the SAM user or root account being configured.
 (For details on how to issue an authentication key to SAM users, please see [Using SORACOM Access Management to Manage Operation Access](https://dev.soracom.io/en/start/sam/).
 
-Thereafter, when executing the soracom command, an API call is made using the authentication information entered here.
+Future API calls will be made using the authentication information configured here.
 
 
-
-## Advanced usage
-
-### Use multiple profiles
+## Using Multiple Profiles
 
 If you have multiple SORACOM accounts or want to use multiple SAM users differently, specify the --profile option to configure and set the profile name.
 
@@ -114,7 +108,7 @@ soracom configure --profile user2
 ```
 
 This will create profiles named user1 and user2.
-To use the profile, specify the --profile option in addition to the normal command.
+To use the profile, append the `--profile` flag to the normal command as shown below:
 
 ```
 soracom subscribers list --profile user1
@@ -127,48 +121,48 @@ soracom groups list --profile user2
 ```
 
 
-### Create a profile for API Sandbox
+## Creating a Profile for API Sandbox
 
-It is possible to use soracom-cli for setting up [SORACOM API Sandbox](https://dev.soracom.io/en/docs/api_sandbox/) environment.
+soracom-cli can also be used for setting up a [SORACOM API Sandbox](https://dev.soracom.io/en/docs/api_sandbox/) environment.
 
-In order to create a profile for sandbox, use `configure-sandbox` subcommand.
+In order to create a profile for sandbox, use the `configure-sandbox` subcommand.
 
 ```
 soracom configure-sandbox
 ```
 
-By answering to the questions prompted, a profile named `sandbox` will be created. By using the `sandbox` profile, you can issue commands to the API sandbox as follows.
+You will be prompted to configure a user for the API Sandbox. After configuring this user a profile named `sandbox` will be created. You can issue commands to the API sandbox with this profile by appending the `--profile sandbox` flag to your commands:
 
 ```
 soracom subscribers list --profile sandbox
 ```
 
-You can use commands dedicated for the sandbox.
+Appending the `--profile snadbox` flag will also enable the usage of sandbox specific API functions:
 
 ```
 soracom sandbox subscribers create --profile sandbox
 ```
 
-You can use different profile name.
+An alternate name can also be configured for the sandbox account with the following commands:
 
 ```
 soracom configure-sandbox --profile test
 soracom sandbox subscribers create --profile test
 ```
 
-In order to make it easier to use from shell scripts etc., all the parameters necessary for profile creation can be specified with arguments.
+For easier to use with shell scripts or other prewritten commands, all parameters necessary for profile creation can be specified with argument:
 
 ```
 soracom configure-sandbox --coverage-type jp --auth-key-id="$AUTHKEY_ID" --auth-key="$AUTHKEY" --email="$EMAIL" --password="$PASSWORD"
 ```
 
 
-### Call API via proxy
+### Calling the API via a Proxy
 
-Set `http://your-proxy-name:port` to HTTP_PROXY environment variable, then execute soracom command.
+To enable a proxy, add `http://your-proxy-name:port` to the HTTP_PROXY environment variable on your system, then execute soracom command.
 
 e.g.) For Linux / Mac:
-Assume that the address of the proxy server is 10.0.1.2 and the port number is 8080
+Assuming that the address of the proxy server is 10.0.1.2 and the port number is 8080
 ```
 export HTTP_PROXY=http://10.0.1.2:8080
 soracom subscribers list
@@ -181,7 +175,7 @@ HTTP_PROXY=http://10.0.1.2:8080 soracom subscribers list
 ```
 
 
-### Trouble shooting
+### Troubleshooting
 
 If you get an error message like the following:
 
@@ -197,22 +191,22 @@ soracom unconfigure
 soracom configure
 ```
 
-i.e. perform `unconfigure` and then `configure` again in order to re-create a credentials file with appropriate permissions.
+i.e. perform `unconfigure` and then `configure` again in order to re-create a credentials file with the appropriate permissions.
 
 
-# How to build / test
+# How to Build / Test
 
-For developers who want to build from source or for those who wish to make a pull request such as bug fix / function addition, please build and test in one of the following ways.
+For developers that want to build from source or for those who wish to make a pull request such as a bug fix or function addition, please build and test in one of the following ways.
 
-## How to build in a local environment (Linux / Mac OS X)
+## Building in a Local Environment (Linux / Mac OS X)
 
-In the environment where Go is installed, run the build script as follows:
+In the environment where Go is installed, run the following build script:
 
 ```
 ./scripts/build.sh 1.2.3
 ```
 
-Here 1.2.3 is the version number. Please specify an appropriate number.
+In this case 1.2.3 is the version number, however the actual version number being used will differ by individual use case. Please be sure to specify an appropriate number.
 
 If the build succeeds, then run the test:
 
@@ -223,7 +217,7 @@ export SORACOM_AUTHKEY_FOR_TEST=...
 ```
 
 
-# How to release
+# How to Release
 
 ```
 VERSION=1.2.3                         # => specify a version number to be released
